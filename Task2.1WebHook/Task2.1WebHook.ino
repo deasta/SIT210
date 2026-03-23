@@ -4,9 +4,6 @@
   Description: Reads temperature from DHT22 and light from a resistor which are then sent to a thingspeak channel
   Hardware: Arduino nano Iot
   
-ingspeak/index.html for the full ThingSpeak documentation.
-  
-
 */
 
 #include <WiFiNINA.h>
