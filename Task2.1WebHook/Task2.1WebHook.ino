@@ -1,45 +1,30 @@
 /*
-  WriteMultipleFields
+  Task2.1WebHook for SIT210
   
-  Description: Writes values to fields 1,2,3,4 and status in a single ThingSpeak update every 20 seconds.
+  Description: Reads temperature from DHT22 and light from a resistor which are then sent to a thingspeak channel
+  Hardware: Arduino nano Iot
   
-  Hardware: Arduino MKR WiFi 1010
+ingspeak/index.html for the full ThingSpeak documentation.
   
-  !!! IMPORTANT - Modify the secrets.h file for this project with your network connection and ThingSpeak channel details. !!!
-  
-  Note:
-  - Requires WiFiNINA library
-  - This example is written for a network using WPA encryption. For WEP or WPA, change the WiFi.begin() call accordingly.
-  
-  ThingSpeak ( https://www.thingspeak.com ) is an analytic IoT platform service that allows you to aggregate, visualize, and 
-  analyze live data streams in the cloud. Visit https://www.thingspeak.com to sign up for a free account and create a channel.  
-  
-  Documentation for the ThingSpeak Communication Library for Arduino is in the README.md folder where the library was installed.
-  See https://www.mathworks.com/help/thingspeak/index.html for the full ThingSpeak documentation.
-  
-  For licensing information, see the accompanying license file.
-  
-  Copyright 2020, The MathWorks, Inc.
+
 */
 
 #include <WiFiNINA.h>
 #include "secrets.h"
 #include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
 #include "DHT.h"
-//Setting GHT pin and type
+//Setting DHT pin and type
 #define DHTPIN 12 
 #define DHTTYPE DHT22
-#define BRIGHTPIN A1
+#define BRIGHTPIN A1 //set resistor pin
 DHT dht(DHTPIN, DHTTYPE);
-//Set light pin
 
 
-char ssid[] = SECRET_SSID;   // your network SSID (name) 
-char pass[] = SECRET_PASS;   // your network password
-int keyIndex = 0;            // your network key Index number (needed only for WEP)
+char ssid[] = SECRET_SSID;   // from secrets.h read network SSID (name) 
+char pass[] = SECRET_PASS;   // from secrets.h read network password
 WiFiClient  client;
-
-unsigned long myChannelNumber = SECRET_CH_ID;
+// Read Thingspeak connection details for thingspeak channel from secrets.h
+unsigned long myChannelNumber = SECRET_CH_ID; 
 const char * myWriteAPIKey = SECRET_WRITE_APIKEY;
 
 
@@ -73,25 +58,27 @@ void loop() {
     } 
     Serial.println("\nConnected.");
   }
-  int brightness = analogRead(BRIGHTPIN);
-  float temperature = dht.readTemperature();
+
+  int brightness = analogRead(BRIGHTPIN); // read brightness from analog pin
+  float temperature = dht.readTemperature(); //read from DHT temperature sensor
     if (isnan(temperature)) {
     Serial.println(F("Failed to read from DHT sensor!"));
     return;
   }
+  //print temp and brightness locally
   Serial.print(F(" Temperature: "));
   Serial.print(temperature);
   Serial.print("  Brightness: ");
   Serial.println(brightness);
 
-  // set the fields with the values
+  // update Thinspeak fields with values
   ThingSpeak.setField(1, temperature);
   ThingSpeak.setField(2, brightness);
 
   // write to the ThingSpeak channel
   int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
   if(x == 200){
-    Serial.println("Channel update successful.");
+    Serial.println("Channel update successful."); //update channel on HTTP 200 OK
   }
   else{
     Serial.println("Problem updating channel. HTTP error code " + String(x));
