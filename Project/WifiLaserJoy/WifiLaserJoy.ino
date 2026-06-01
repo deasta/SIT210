@@ -3,12 +3,16 @@
 #include <EventJoystick.h>
 #include <EventButton.h>
 #include "secrets.h"
-
+/*
+  ****** Deakin University SIT 210 Laser toy project ******
+  This is the remote control code for the Rpi Pico used to control a laser turret cat toy.
+  The device uses wifi to connect to and send instructions to another device that controls a laser using servos
+*/
 // WiFi / UDP 
 const char* AP_SSID  = SECRET_SSID;
 const char* AP_PASS  = SECRET_PASS;
-const char* NANO_IP  = "192.168.4.1";
-const int   UDP_PORT = 4210;
+const char* NANO_IP  = SECRET_IP;
+const int   UDP_PORT = SECRET_UDP;
 
 WiFiUDP udp;
 

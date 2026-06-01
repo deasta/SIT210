@@ -2,6 +2,13 @@
 #include <WiFiUdp.h>
 #include <Servo.h>
 #include "secrets.h"
+/*
+  ****** Deakin University SIT 210 Laser toy project ******
+  This code controls an Arduino Nano IoT 33 connected laser mount.
+  The laser is moved by adjusting two servos that the laser is mounted to.
+  Controls are recieved from a wifi connected remote control using a joystick and buttons.
+*/
+
 
 // *** WiFi AP ***
 const char* AP_SSID = SECRET_SSID;
