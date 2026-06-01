@@ -32,27 +32,45 @@ void TriggerLed() {
   cancelLights = false;
   digitalWrite(PIN_LED_PORCH, HIGH);
   digitalWrite(PIN_LED_HALL, HIGH);
-    for (unsigned long i = 0; i < duration_porch; i += 50) {
-      if (cancelLights) {
-        digitalWrite(PIN_LED_PORCH, LOW);
-        digitalWrite(PIN_LED_HALL, LOW);
-        return;  // Cancel lights immediately
-      }
-      delay(50);
-    }
-  digitalWrite(PIN_LED_PORCH, LOW);
-  //wait for remaining duration on hall light.
-  for (unsigned long i = 0; i < duration_hall; i += 50) {
-    if (cancelLights) {
+  Serial.println("lights triggered on.");
+
+  for (unsigned long i = 0; i < duration_porch; i += 50) {
+    // Check switch press directly inside loop
+    if (switchPressed) {
+      Serial.println("Cancelling porch");
+      switchPressed = false;
+      digitalWrite(PIN_LED_PORCH, LOW);
       digitalWrite(PIN_LED_HALL, LOW);
+      lightsOnMotion = false;
+      lightsOnSwitch = false;
       return;
     }
     delay(50);
   }
-  //sets hall light off
+
+  digitalWrite(PIN_LED_PORCH, LOW);
+
+  for (unsigned long i = 0; i < duration_hall; i += 50) {
+    // Check switch press directly inside loop
+    if (switchPressed) {
+      Serial.println("Cancelling hall");
+      switchPressed = false;
+      digitalWrite(PIN_LED_HALL, LOW);
+      lightsOnMotion = false;
+      lightsOnSwitch = false;
+      return;
+    }
+    delay(50);
+  }
+
   digitalWrite(PIN_LED_HALL, LOW);
+  Serial.println("Timer done. Lights off.");
   lightsOnMotion = false;
+  lightsOnSwitch = false;
+  
 }
+
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -98,7 +116,7 @@ void loop() {
   }
 
   if (lightsOnMotion) {
-    Serial.println("Motion triggered");
+    Serial.println("Motion detected");
   }
 
   // Interrupts interferring with light read 
@@ -113,11 +131,11 @@ void loop() {
   }
 
   bool isDark = lux < lightThreshold;
-  Serial.print("Light: ");
-  Serial.print(lux);
-  Serial.println(" lx");
-  Serial.print("Is it Dark? ");
-  Serial.println(isDark);
+  // Serial.print("Light: ");
+  // Serial.print(lux);
+  // Serial.println(" lx");
+  // Serial.print("Is it Dark? ");
+  // Serial.println(isDark);
 
   if (lightsOnSwitch || (isDark && lightsOnMotion)) {
     TriggerLed();
