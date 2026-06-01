@@ -67,17 +67,17 @@ void setup() {
     delay(1000);
   }
   delay(500);
-
+  //interrupts
   attachInterrupt(digitalPinToInterrupt(PIN_MOTION), triggerOnMotion, RISING);
   attachInterrupt(digitalPinToInterrupt(PIN_SWITCH), triggerOnSwitch, RISING);
   
-  Serial.println("Running LED test...");
-digitalWrite(PIN_LED_PORCH, HIGH);
-digitalWrite(PIN_LED_HALL, HIGH);
-delay(1000);
-digitalWrite(PIN_LED_PORCH, LOW);
-digitalWrite(PIN_LED_HALL, LOW);
-Serial.println("LED test complete");
+  Serial.println("LED test");
+  digitalWrite(PIN_LED_PORCH, HIGH);
+  digitalWrite(PIN_LED_HALL, HIGH);
+  delay(1000);
+  digitalWrite(PIN_LED_PORCH, LOW);
+  digitalWrite(PIN_LED_HALL, LOW);
+
 }
 
 
@@ -101,11 +101,11 @@ void loop() {
     Serial.println("Motion triggered");
   }
 
-  // Interrupts interferring with light read
+  // Interrupts interferring with light read 
   noInterrupts();
   float lux = lightMeter.readLightLevel();
   interrupts();
-
+  // Delay to stop sensor getting overwhelmed
   if (lux < 0) {
     lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE);
     delay(500);
